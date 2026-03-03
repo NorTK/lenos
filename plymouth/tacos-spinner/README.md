@@ -1,5 +1,11 @@
 # Plymouth theme - TacOS with Spinner
 
+# Install Packages
+
+```bash
+# dnf install -y plymouth-plugin-two-step plymouth-set-default-theme
+```
+
 # Setup
 
 ```bash
