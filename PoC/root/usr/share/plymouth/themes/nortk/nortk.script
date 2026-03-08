@@ -1,0 +1,26 @@
+Window.SetBackgroundTopColor(0.0, 0.0, 0.0);
+Window.SetBackgroundBottomColor(0.0, 0.0, 0.0);
+
+logo_image = Image("nortk-logo.png");
+logo_sprite = Sprite(logo_image);
+
+// Initial centering
+logo_sprite.SetX(Window.GetWidth() / 2 - logo_image.GetWidth() / 2);
+logo_sprite.SetY(Window.GetHeight() / 2 - logo_image.GetHeight() / 2);
+
+progress = 0;
+
+fun refresh_callback()
+{
+    progress++;
+    
+    // Breathing effect: smooth pulse between 0.4 and 1.0 opacity
+    opacity = (Math.Sin(progress / 30) + 1) / 2 * 0.6 + 0.4;
+    logo_sprite.SetOpacity(opacity);
+    
+    // Keep it centered
+    logo_sprite.SetX(Window.GetWidth() / 2 - logo_image.GetWidth() / 2);
+    logo_sprite.SetY(Window.GetHeight() / 2 - logo_image.GetHeight() / 2);
+}
+
+Plymouth.SetRefreshFunction(refresh_callback);
