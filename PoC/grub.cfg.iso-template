@@ -26,9 +26,9 @@ insmod ext2
 insmod fat
 
 # Enable graphical terminal
+set gfxmode=1920x1080x32
 insmod font
 if loadfont unicode ; then
-  set gfxmode=auto
   insmod gfxterm
   set locale_dir=($$root)/boot/grub2/locale
   set lang=en_US
@@ -37,18 +37,22 @@ fi
 
 terminal_input console
 terminal_output gfxterm
-
 set timeout=${boot_timeout}
 set timeout_style=${boot_timeout_style}
 
+# THEME
+set theme=($$root)/boot/grub2/themes/Matrices-circle-window/theme.txt
+export theme
+
 search ${search_params}
 
-menuentry "Start TacOS (CentOS Stream 10)" --class fedora --class gnu-linux --class gnu --class os {
+#menuentry "Start TacOS (CentOS Stream 10)" --class fedora --class gnu-linux --class gnu --class os {
+menuentry "Start TacOS (0.1.0 Arrachera)" --class gnu-linux --class gnu --class os {
 	linux ($$root)${bootpath}/${kernel_file} ${boot_options} root=live:LABEL=TACOS
 	initrd ($$root)${bootpath}/${initrd_file}
 }
 
-menuentry "Boot from local drive" --class fedora --class gnu-linux --class gnu --class os {
+menuentry "Boot from local drive" --class gnu-linux --class gnu --class os {
 	if [ "$$grub_platform" = "efi" ]; then
 		insmod chain
 		search --no-floppy --set=target --file /EFI/nortk/grubx64.efi
@@ -75,7 +79,7 @@ menuentry "Boot from local drive" --class fedora --class gnu-linux --class gnu -
 }
 
 submenu "Troubleshooting -->" {
-	menuentry "Start TacOS (CentOS Stream 10) in basic graphics mode" --class fedora --class gnu-linux --class gnu --class os {
+	menuentry "Start TacOS (0.1.0 Arrachera) in basic graphics mode" --class gnu-linux --class gnu --class os {
 		linux ($$root)${bootpath}/${kernel_file} ${boot_options} $${basicgfx}
 		initrd ($$root)${bootpath}/${initrd_file}
 	}
