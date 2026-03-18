@@ -26,7 +26,7 @@
 
 	<preferences profiles="Live">
 		<type image="iso" volid="TACOS" flags="dmsquash" firmware="uefi" hybridpersistent_filesystem="ext4" hybridpersistent="true" kernelcmdline="console=tty0 rhgb quiet">
-			<bootloader name="grub2" grub_template="grub.cfg.iso-template" console="console" timeout="10"/>
+			<bootloader name="grub2" grub_template="grub.cfg.iso-template" console="console" timeout="10" />
 		</type>
 	</preferences>
 
@@ -46,6 +46,8 @@
 	</preferences>
 
 	<users>
+		<user password="paselepasele" pwdformat="plain" home="/home/paisa" name="paisa" groups="taqueros"/>
+		<user password="lacuentaporfavor" pwdformat="plain" home="/home/marchante" name="marchante" groups="marchante"/>
 		<user password="ricostacos" pwdformat="plain" home="/root" name="root" groups="root"/>
 	</users>
 
