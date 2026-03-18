@@ -8,6 +8,13 @@ set -euxo pipefail
 test -f /.kconfig && . /.kconfig
 test -f /.profile && . /.profile
 
+
+# Fix dracut error
+# https://github.com/dracut-ng/dracut-ng/pull/1340/
+echo "DRACUT BUG"
+sed 's/^get_url_handler//' \
+    /usr/lib/dracut/modules.d/90livenet/parse-livenet.sh
+
 #======================================
 # Greeting...
 #--------------------------------------
@@ -35,6 +42,41 @@ truncate -s 0 /etc/machine-id
 systemctl set-default multi-user.target
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
+
+#======================================
+# Setup GRUB Theme
+#--------------------------------------
+echo "Configuring GRUB theme..."
+
+# 1. Identify the grub directory (distro-dependent)
+if [ -d /boot/grub2 ]; then
+    GRUB_DIR="/boot/grub2"
+elif [ -d /boot/grub ]; then
+    GRUB_DIR="/boot/grub"
+fi
+
+# 2. Update /etc/default/grub with the theme path
+# We use 'sed' to ensure we don't double-up if the line exists
+GRUB_TERMINAL_OUTPUT="gfxterm"
+GRUB_GFXMODE=1920x1080x32
+THEME_PATH="${GRUB_DIR}/themes/Matrices-circle-window/theme.txt"
+
+if [ -f /etc/default/grub ]; then
+    # Remove existing GRUB_THEME lines and append the new one
+    sed -i '/^GRUB_THEME=/d' /etc/default/grub
+    echo "GRUB_THEME=\"${THEME_PATH}\"" >> /etc/default/grub
+
+    # Optional: Ensure graphics mode is enabled
+    sed -i '/^GRUB_TERMINAL=/d' /etc/default/grub
+    echo "GRUB_TERMINAL=\"gfxterm\"" >> /etc/default/grub
+fi
+
+# 3. Regenerate the actual grub.cfg file
+if [ -x "$(command -v grub2-mkconfig)" ]; then
+    grub2-mkconfig -o "${GRUB_DIR}/grub.cfg"
+elif [ -x "$(command -v grub-mkconfig)" ]; then
+    grub-mkconfig -o "${GRUB_DIR}/grub.cfg"
+fi
 
 # SSH keys for root
 mkdir -p /root/.ssh
