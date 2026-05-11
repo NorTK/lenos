@@ -26,7 +26,7 @@ insmod ext2
 insmod fat
 
 # Enable graphical terminal
-set gfxmode=1920x1080x32
+#set gfxmode=1920x1080x32
 insmod font
 if loadfont unicode ; then
   insmod gfxterm
@@ -41,7 +41,7 @@ set timeout=${boot_timeout}
 set timeout_style=${boot_timeout_style}
 
 # THEME
-set theme=($$root)/boot/grub2/themes/Matrices-circle-window/theme.txt
+set theme=($$root)/boot/grub2/themes/tacos-grub-theme/theme.txt
 export theme
 
 search ${search_params}
