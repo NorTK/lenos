@@ -31,8 +31,17 @@
     </preferences>
 
     <preferences profiles="Disk">
-        <type image="oem" volid="TACOS" filesystem="ext4" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rd.kiwi.install.selectdisk=1">
+        <type image="oem" volid="TACOS" filesystem="btrfs" btrfs_set_default_volume="true" btrfs_root_is_subvolume="true" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rd.kiwi.install.selectdisk=1">
             <bootloader name="grub2" grub_template="grub.cfg.iso-template" console="console" timeout="10"/>
+
+            <systemdisk name="nortkfs">
+                <volume name="@root"/>
+                <volume name="var" mountpoint="/var"/>
+                <volume name="libvirt" mountpoint="/var/lib/libvirt/images"/>
+                <volume name="srv" mountpoint="/srv"/>
+                <volume name="usr_local" mountpoint="/usr/local"/>
+                <volume name="home" mountpoint="/home"/>
+            </systemdisk>
 
             <oemconfig>
                 <oem-unattended>false</oem-unattended>
