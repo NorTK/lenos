@@ -31,7 +31,7 @@
     </preferences>
 
     <preferences profiles="Disk">
-        <type image="oem" volid="TACOS" filesystem="btrfs" btrfs_set_default_volume="true" btrfs_root_is_subvolume="true" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rd.kiwi.install.selectdisk=1">
+        <type image="oem" volid="TACOS" filesystem="btrfs" btrfs_set_default_volume="true" bootfilesystem="btrfs" btrfs_root_is_subvolume="true" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rd.kiwi.install.selectdisk=1">
             <bootloader name="grub2" grub_template="grub.cfg.iso-template" console="console" timeout="10"/>
 
             <systemdisk name="nortkfs">
@@ -112,7 +112,8 @@
         <namedCollection name="base"/>
         <namedCollection name="core"/>
         <namedCollection name="system-tools"/>
-
+        <package name="btrfs-progs"/>
+        <package name="btrfs-efi-unsigned-x64"/>
         <package name="bash"/>
         <package name="e2fsprogs"/>
         <package name="epel-release"/>
@@ -147,6 +148,8 @@
     </packages>
 
     <packages type="image" profiles="Disk">
+        <package name="xfsprogs"/>
+        <package name="dosfstools"/>
         <package name="dracut-kiwi-oem-dump"/>
         <package name="dracut-kiwi-oem-repart"/>
         <package name="dracut-network"/>
