@@ -11,9 +11,11 @@ test -f /.profile && . /.profile
 
 # Fix dracut error
 # https://github.com/dracut-ng/dracut-ng/pull/1340/
-echo "DRACUT BUG"
-sed 's/^get_url_handler//' \
-    /usr/lib/dracut/modules.d/90livenet/parse-livenet.sh
+echo "FIX DRACUT BUG"
+if [[ -f /usr/lib/dracut/modules.d/90livenet/parse-livenet.sh ]]; then
+    sed 's/^get_url_handler//' \
+        /usr/lib/dracut/modules.d/90livenet/parse-livenet.sh
+fi
 
 #======================================
 # Greeting...
@@ -28,7 +30,7 @@ echo "tacos" > /etc/hostname
 
 # Ensure Plymouth uses the nortk theme
 if [ -x /usr/sbin/plymouth-set-default-theme ]; then
-	/usr/sbin/plymouth-set-default-theme tacos-spinner
+	/usr/sbin/plymouth-set-default-theme tacos-simple
 fi
 
 #======================================
@@ -42,7 +44,8 @@ truncate -s 0 /etc/machine-id
 systemctl set-default multi-user.target
 systemctl enable sshd.service
 systemctl enable NetworkManager.service
-
+systemctl disable systemd-update-done.service
+systemctl disable firewalld.service
 #======================================
 # Setup GRUB Theme
 #--------------------------------------
