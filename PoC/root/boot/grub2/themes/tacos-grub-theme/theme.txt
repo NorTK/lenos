@@ -1,0 +1,56 @@
+# Adapted from Deadpool Theme By @bishwassagar
+# Global properties
+title-text: ""
+# ORIGINAL desktop-color: "#000000"
+# Pruebas
+desktop-color: "#000000"
+terminal-box: "terminal_box_*.png"
+terminal-left: "0"
+terminal-top: "0"
+terminal-width: "100%"
+terminal-height: "100%"
+terminal-border: "0"
+
+# Boot menu
++ boot_menu {
+  left = 15%
+  top = 25%
+  width = 80%
+  height = 40%
+  item_color = "#bbbbbb"
+  selected_item_color = "#ffffff"
+  item_height = 48
+  item_spacing = 8
+  item_icon_space = 12
+  item_pixmap_style = "item_*.png"
+  selected_item_pixmap_style = "selected_item_*.png"
+}
+
+# Countdown message
++ label {
+  left = 0
+  top = 98%-70
+  width = 100%
+  align = "center"
+  id = "__timeout__"
+  text = "Booting in %d seconds"
+  color = "#ffffff"
+}
+
+# Navigation keys hint
++ label {
+  left = 0
+  top = 98%-30
+  width = 100%
+  align = "center"
+  text = "Use [UP] and [DOWN] keys to change selection, Enter to confirm"
+  color = "#ffffff"
+}
+
++ image {
+    left = 107
+    top  = 45
+    width = 0%
+    height = 0%
+    file = "nortk_logo.png"
+}
