@@ -1,0 +1,87 @@
+# Inspired by the config used for official live media
+
+set default=0
+
+if [ "$$grub_platform" = "efi" ]; then
+	function load_video {
+		insmod efi_gop
+		insmod efi_uga
+		insmod video_bochs
+		insmod video_cirrus
+		insmod all_video
+	}
+	set basicgfx="nomodeset"
+else
+	function load_video {
+		insmod all_video
+	}
+	set basicgfx="nomodeset vga=791"
+fi
+
+load_video
+set gfxpayload=keep
+insmod gzio
+insmod part_gpt
+insmod ext2
+insmod fat
+insmod btrfs
+
+# Enable graphical terminal
+#set gfxmode=1920x1080x32
+insmod font
+if loadfont unicode ; then
+  insmod gfxterm
+  set locale_dir=($$root)/boot/grub2/locale
+  set lang=en_US
+  insmod gettext
+fi
+
+terminal_input console
+terminal_output gfxterm
+set timeout=${boot_timeout}
+set timeout_style=${boot_timeout_style}
+
+# THEME
+set theme=($$root)/boot/grub2/themes/tacos-grub-theme/theme.txt
+export theme
+
+search ${search_params}
+
+#menuentry "Start TacOS (CentOS Stream 10)" --class fedora --class gnu-linux --class gnu --class os {
+menuentry "Start TacOS (0.1.0 Arrachera)" --class gnu-linux --class gnu --class os {
+	linux ($$root)${bootpath}/${kernel_file} ${boot_options}
+	initrd ($$root)${bootpath}/${initrd_file}
+}
+
+menuentry "Boot from local drive" --class gnu-linux --class gnu --class os {
+	if [ "$$grub_platform" = "efi" ]; then
+		insmod chain
+		search --no-floppy --set=target --file /EFI/nortk/grubx64.efi
+		if [ -n "$$target" ]; then
+			chainloader ($$target)/EFI/nortk/grubx64.efi
+		else
+			search --no-floppy --set=target --file /EFI/fedora/grubx64.efi
+			if [ -n "$$target" ]; then
+				chainloader ($$target)/EFI/fedora/grubx64.efi
+			else
+				search --no-floppy --set=target --file /EFI/centos/grubx64.efi
+				if [ -n "$$target" ]; then
+					chainloader ($$target)/EFI/centos/grubx64.efi
+				else
+					search --no-floppy --set=target --file /EFI/BOOT/BOOTX64.EFI
+					if [ -n "$$target" ]; then
+						chainloader ($$target)/EFI/BOOT/BOOTX64.EFI
+					fi
+				fi
+			fi
+		fi
+	fi
+	exit
+}
+
+submenu "Troubleshooting -->" {
+	menuentry "Start TacOS (0.1.0 Arrachera) in basic graphics mode" --class gnu-linux --class gnu --class os {
+		linux ($$root)${bootpath}/${kernel_file} ${boot_options} $${basicgfx}
+		initrd ($$root)${bootpath}/${initrd_file}
+	}
+}
