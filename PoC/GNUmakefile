@@ -27,6 +27,17 @@ test-disk:
 		-nic user,hostfwd=tcp::2222-:22 -usb -device usb-tablet -boot menu=on
 	rm -f test-disk.qcow2 test-vars.fd
 
+debug-disk:
+	-qemu-kvm -enable-kvm -machine pc,vmport=off -cpu host -smp 4 -m 8192 \
+		-drive if=pflash,format=raw,unit=0,file=/usr/share/edk2/ovmf/OVMF_CODE.fd,readonly=on \
+		-drive if=pflash,format=raw,unit=1,file=test-vars.fd \
+		-drive file=test-disk.qcow2,if=none,id=drive0,format=qcow2,werror=ignore,rerror=ignore,file.locking=off \
+		-device virtio-blk-pci,drive=drive0,bootindex=0 \
+		-drive file=result-disk/TacOS.x86_64-$(version).install.iso,if=none,id=drive1,media=cdrom,readonly=on \
+		-device ide-cd,drive=drive1,bootindex=1 \
+		-nic user,hostfwd=tcp::2222-:22 -usb -device usb-tablet -boot menu=on
+
+
 clean:
 	sudo rm -fr result-live/build/image-root*
 	sudo rm -f result-live/TacOS*
@@ -34,6 +45,15 @@ clean:
 	sudo rm -f result-disk/TacOS*
 	rm -f *.qcow2 test-vars.fd
 
+prepare-disk:
+	-setenforce 0
+	kiwi-ng --profile=Disk system prepare --description=. --root=root-disk/
+	-setenforce 1
+
+create-disk:
+	-setenforce 0
+	kiwi-ng --debug --profile=Disk system create --target-dir=result-disk/ --root=root-disk/
+	-setenforce 1
 
 distclean:
 	rm -fr result-*
