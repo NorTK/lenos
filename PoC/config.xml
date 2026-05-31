@@ -31,8 +31,17 @@
     </preferences>
 
     <preferences profiles="Disk">
-        <type image="oem" efipartsize="50" volid="TACOS" filesystem="btrfs" btrfs_set_default_volume="true" bootfilesystem="btrfs" btrfs_root_is_subvolume="true" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rd.kiwi.install.selectdisk=1">
-            <bootloader name="grub2" grub_template="grub.cfg.iso-disk-template" console="console" timeout="5"/>
+        <type image="oem" efipartsize="50" efifatimagesize="30" volid="TACOS" filesystem="btrfs" btrfs_set_default_volume="true" bootfilesystem="btrfs" btrfs_root_is_subvolume="true" installiso="true" installboot="install" firmware="uefi" kernelcmdline="console=tty0 rhgb quiet rootflags=subvol=@root">
+            <bootloader name="grub2" grub_template="grub.cfg.disk.iso-template" console="console" timeout="5">
+                <bootloadersettings>
+                    <configoption name="modules" value="btrfs zstd ext2 fat part_gpt part_msdos all_video png jpeg gzio mdraid09 mdraid1x raid5rec raid6rec search configfile normal echo test loadenv gettext font minicmd gfxterm gfxmenu efi_gop efi_uga"/>
+                    <environment>
+                        <env name="gfxmode" value="1920x1080,1024x768,auto"/>
+                        <env name="gfxpayload" value="keep"/>
+                        <env name="GRUB_PRELOAD_MODULES" value="btrfs"/>
+                    </environment>
+                </bootloadersettings>
+            </bootloader>
 
             <systemdisk name="nortkfs">
                 <volume name="@root"/>
@@ -107,6 +116,12 @@
             <signing key="https://www.centos.org/keys/RPM-GPG-KEY-CentOS-SIG-HyperScale"/>
         </source>
     </repository>
+    <!--
+        TODO: crear repo en repos.tacos.org.mx
+    -->
+    <repository type="rpm-md" alias="tacos-custom" priority="1">
+        <source path="dir:////home/imcsk8/NorTK/lenos/PoC/root/var/cache/kiwi/custom-rpms"/>
+    </repository>
 
     <packages type="image" patternType="plusRecommended">
         <namedCollection name="base"/>
@@ -141,6 +156,8 @@
         <package name="plymouth-scripts"/>
         <package name="plymouth-theme-script"/>
         <package name="shim-x64" arch="x86_64"/>
+        <package name="mokutil"/>
+        <package name="tacos-secureboot" arch="x86_64"/>
     </packages>
 
     <packages type="image" profiles="Live">
@@ -156,6 +173,8 @@
         <package name="dracut-network"/>
         <package name="grub2-efi-x64-modules" arch="x86_64"/>
         <package name="grub2-efi-x64-cdboot" arch="x86_64"/>
+        <package name="mokutil"/>
+        <package name="tacos-secureboot" arch="x86_64"/>
     </packages>
 
     <packages type="bootstrap">

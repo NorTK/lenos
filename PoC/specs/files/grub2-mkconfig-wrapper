@@ -1,0 +1,56 @@
+#!/bin/bash
+#
+#        System                    |          grub
+# /boot/efi/                       |       (hd0,gpt2)
+# /boot/efi/boot/grub2/x86_64-efi  | (hd0,gpt2)/boot/grub2/x86_64-efi
+#
+# Update the target directory to /boot/efi/EFI/nortk
+
+DISTRIBUTOR="nortk"
+
+# Setup enviroment if is not already set
+if [ ! -f /boot/efi/EFI/nortk/x86_64-efi/btrfs.mod ]; then
+    touch /boot/efi/TOUCHED_BY_GRUB_MKCONFIG_WRAPPER_NORTK
+    echo "GRUB_DISTRIBUTOR=\"${DISTRIBUTOR}\"" >> /etc/default/grub
+    mkdir -p /boot/efi/EFI/nortk
+    if [ ! -f /boot/efi/boot/grub2/x86_64-efi/btrfs.mod ]; then
+        mkdir -p /boot/efi/boot/grub2/x86_64-efi
+        mkdir -p /boot/efi/EFI/nortk/x86_64-efi
+        mkdir -p /boot/efi/EFI/centos/x86_64-efi
+        # Sucio hack previo a crear el grubx64.efi sabor nortk
+        # TODO: revisar cual es el bueno
+        cp /usr/lib/grub/x86_64-efi/btrfs.mod /boot/efi/boot/grub2/x86_64-efi/
+        cp /usr/lib/grub/x86_64-efi/btrfs.mod /boot/efi/EFI/nortk/x86_64-efi/
+        cp /usr/lib/grub/x86_64-efi/btrfs.mod /boot/efi/EFI/centos/x86_64-efi/
+        cp /usr/lib/grub/x86_64-efi/raid6rec.mod /boot/efi/boot/grub2/x86_64-efi/
+        cp /usr/lib/grub/x86_64-efi/raid6rec.mod /boot/efi/EFI/nortk/x86_64-efi/
+        cp /usr/lib/grub/x86_64-efi/raid6rec.mod /boot/efi/EFI/centos/x86_64-efi/
+    fi
+    touch /boot/efi/EFI/nortk/TOUCHED_BY_GRUB_MKCONFIG_WRAPPER_NORTK
+fi
+
+# Execute the real grub config generator
+/usr/sbin/grub2-mkconfig.redhat "$@"
+EXIT_CODE=$?
+TARGET_CFG="/boot/grub2/grub.cfg"
+
+if ! grep btrfs /boot/efi/EFI/nortk/grub.cfg; then
+    touch /boot/efi/TOUCHED_BY_GRUB_MKCONFIG_WRAPPER_BTRFS
+    # Fix grub efi branding
+    if [ -f /boot/efi/EFI/centos/bootx64.csv ]; then
+        mv /boot/efi/EFI/centos/bootx64.csv /boot/efi/EFI/centos/bootx64.csv.disabled
+    fi
+    cp -f /boot/efi/EFI/centos/* /boot/efi/EFI/nortk/
+    sed -i '1 i\insmod btrfs' /boot/efi/EFI/boot/grub.cfg
+    cp -f /boot/efi/EFI/boot/grub.cfg /boot/efi/EFI/nortk/
+    sed -i  /boot/efi/EFI/nortk/grub.cfg
+fi
+
+touch /boot/efi/EFI/TOUCHED_BY_GRUB_MKCONFIG_WRAPPER
+
+if [ -f "${TARGET_CFG}" ]; then
+    sed -i 's|/LVRoot/boot|/boot|g' ${TARGET_CFG}
+    sed -i 's|/@root/boot|/boot|g' ${TARGET_CFG}
+fi
+
+exit $EXIT_CODE
